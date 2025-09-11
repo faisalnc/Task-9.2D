@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export const runtime = "nodejs"; // ✅ Netlify compatible
+export const runtime = "nodejs"; // Netlify compatible
 
 // ========== POST ==========
 export async function POST(req: NextRequest) {
