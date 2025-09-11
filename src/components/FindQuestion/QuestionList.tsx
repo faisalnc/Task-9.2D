@@ -41,7 +41,7 @@ export default function QuestionList() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/questions/${id}`, { method: "DELETE" });
+    await fetch(`/api/questions?id=${id}`, { method: "DELETE" });
     loadQuestions(); // refresh list
   };
 

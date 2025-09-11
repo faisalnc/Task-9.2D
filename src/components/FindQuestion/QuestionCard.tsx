@@ -1,3 +1,4 @@
+//src/components/FindQuestion/QuestionCard.tsx
 "use client";
 
 import { Question } from "@/types/Question";
