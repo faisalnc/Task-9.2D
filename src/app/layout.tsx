@@ -1,9 +1,9 @@
-// task-4.1p-next/src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -26,20 +26,15 @@ export const metadata: Metadata = {
   description: "Secure Frontend Development with React",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${ibmPlexSans.variable} ${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="bg-white text-black font-sans antialiased w-full min-h-screen">
-        {/*  Wrap your app with AuthProvider */}
+      <body className="bg-white text-black dark:bg-gray-900 dark:text-white font-sans antialiased w-full min-h-screen">
         <AuthProvider>
-          {children}
+          <ThemeProvider>{children}</ThemeProvider>
         </AuthProvider>
       </body>
     </html>

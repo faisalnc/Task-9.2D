@@ -16,13 +16,28 @@ export default function RegisterPage() {
 
   const handleRegister = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      // Create Firebase Auth user
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Save user profile & 2FA flag in Mongo
+      await fetch("/api/2fa/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: cred.user.uid,
+          email,
+          firstName,
+          lastName,
+          twoFactorEnabled: false, // default OFF
+        }),
+      });
+
       router.push("/login");
-    } catch (err: unknown) {
-      const errorMessage =
+    } catch (err) {
+      const message =
         err instanceof Error ? err.message : "Registration failed.";
-      console.error(err);
-      setError(errorMessage);
+      console.error("Registration failed:", err);
+      setError(message);
     }
   };
 
