@@ -1,16 +1,19 @@
-//src/app/plus/success/page.tsx
 "use client";
+export const dynamic = "force-dynamic"; // ⬅️ prevents prerendering
+
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
-  const sessionId = searchParams?.get("session_id") ?? null; 
+  const sessionId = searchParams?.get("session_id") ?? null;
   const { user } = useAuth();
   const router = useRouter();
 
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
 
   useEffect(() => {
     const confirmSubscription = async () => {
@@ -20,11 +23,9 @@ export default function SuccessPage() {
       }
 
       try {
-        // Verify session with backend
         const res = await fetch(`/api/plus/confirm?session_id=${sessionId}`);
         if (!res.ok) throw new Error("Session verification failed");
 
-        // Activate Plus in MongoDB
         const activate = await fetch("/api/plus/activate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -35,7 +36,6 @@ export default function SuccessPage() {
 
         setStatus("success");
 
-        // Small delay, then redirect home
         setTimeout(() => {
           router.push("/");
         }, 2000);
@@ -51,7 +51,9 @@ export default function SuccessPage() {
   return (
     <main className="max-w-screen-md mx-auto px-6 py-10 text-center">
       {status === "loading" && (
-        <h1 className="text-xl font-semibold">Confirming your subscription...</h1>
+        <h1 className="text-xl font-semibold">
+          Confirming your subscription...
+        </h1>
       )}
 
       {status === "success" && (
@@ -62,7 +64,7 @@ export default function SuccessPage() {
 
       {status === "error" && (
         <h1 className="text-xl font-semibold text-red-600">
-          Please Wait...
+          Something went wrong. Please try again.
         </h1>
       )}
     </main>
