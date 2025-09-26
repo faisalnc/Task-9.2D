@@ -65,8 +65,8 @@ function SuccessContent() {
       )}
 
       {status === "error" && (
-        <h1 className="text-xl font-semibold text-red-600">
-          Something went wrong. Please try again.
+        <h1 className="text-xl font-semibold text-teal-600">
+          Please wait...
         </h1>
       )}
     </main>
