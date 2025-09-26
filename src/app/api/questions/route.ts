@@ -9,7 +9,7 @@ export const runtime = "nodejs"; // Netlify compatible
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, description, tags, imageUrl, userId } = body;
+    const { title, description, tags, imageUrl, userId, code } = body; 
 
     if (!title || !description || !userId) {
       return NextResponse.json(
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       description,
       tags: tags || [],
       imageUrl: imageUrl || null,
+      code: code || "",   
       userId,
       createdAt: new Date(),
     };
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 // ========== GET ==========
 export async function GET() {

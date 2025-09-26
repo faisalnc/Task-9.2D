@@ -4,8 +4,14 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAuth } from "@/context/AuthContext";
+import { usePlusStatus } from "@/hooks/usePlusStatus"; // ✅ import
 import ImageUploader from "./ImageUploader";
 import { useRouter } from "next/navigation";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { EditorView } from "@codemirror/view";
+import Link from "next/link";
 
 // Predefined tag options
 const TAG_OPTIONS = [
@@ -23,8 +29,9 @@ const TAG_OPTIONS = [
 type FormValues = {
   title: string;
   body: string;
-  tags: string[]; // changed from string to array
+  tags: string[];
   imageFile: File | null;
+  code: string;
 };
 
 const validationSchema = Yup.object({
@@ -47,9 +54,9 @@ const validationSchema = Yup.object({
     .test("fileType", "Only images are allowed", (file) =>
       file ? /^image\//.test(file.type) : true
     ),
+  code: Yup.string().max(5000, "Code must be at most 5000 characters"),
 });
 
-// Converts File to base64 string
 async function convertToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -61,8 +68,7 @@ async function convertToBase64(file: File): Promise<string> {
 
 export default function QuestionForm() {
   const { user } = useAuth();
-  console.log("From context:", user);
-
+  const hasPlus = usePlusStatus(user?.uid); // ✅ check Plus status
   const router = useRouter();
 
   const initialValues: FormValues = {
@@ -70,6 +76,7 @@ export default function QuestionForm() {
     body: "",
     tags: [],
     imageFile: null,
+    code: "",
   };
 
   const onSubmit = async (
@@ -91,6 +98,7 @@ export default function QuestionForm() {
           description: values.body,
           tags: values.tags,
           imageUrl,
+          code: hasPlus ? values.code : "", // ✅ only save code if Plus
           userId: user?.uid,
         }),
       });
@@ -99,7 +107,6 @@ export default function QuestionForm() {
 
       resetForm();
       router.push("/find-question");
-
     } catch (err) {
       console.error(err);
       alert("Failed to submit question. Please try again.");
@@ -142,6 +149,39 @@ export default function QuestionForm() {
             />
             <ErrorMessage
               name="body"
+              component="div"
+              className="text-red-500 text-sm"
+            />
+          </div>
+
+          {/* Code Snippet (Plus only) */}
+          <div>
+            <label className="block font-medium mb-1">Code Snippet</label>
+            {hasPlus ? (
+              <div className="border rounded">
+                <CodeMirror
+                  value={values.code}
+                  height="200px"
+                  extensions={[javascript(), python(), EditorView.lineWrapping]}
+                  onChange={(value) => setFieldValue("code", value)}
+                  theme="light"
+                />
+              </div>
+            ) : (
+              <div className="p-4 border rounded text-sm text-gray-600 bg-gray-50">
+                🔒 Posting code snippets is a{" "}
+                <span className="font-semibold text-teal-600">Plus</span> feature.
+                <br />
+                <Link
+                  href="/plus"
+                  className="inline-block mt-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 px-3 py-1.5 rounded-lg hover:opacity-90 transition"
+                >
+                  Upgrade to Plus
+                </Link>
+              </div>
+            )}
+            <ErrorMessage
+              name="code"
               component="div"
               className="text-red-500 text-sm"
             />

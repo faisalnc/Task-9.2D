@@ -11,15 +11,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    // Define a type for the message objects
     type Message = { role: "user" | "assistant"; content: string };
 
     const userContent = (messages as Message[])
       .map((m) => `${m.role}: ${m.content}`)
       .join("\n");
 
-    // Free tier supports gemini-1.5-flash
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Gemini Model
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+    });
 
     const result = await model.generateContent(userContent);
     const text = result.response.text();
@@ -31,6 +32,9 @@ export async function POST(req: NextRequest) {
     } else {
       console.error("Gemini API error:", err);
     }
-    return NextResponse.json({ error: "Gemini request failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Gemini request failed" },
+      { status: 500 }
+    );
   }
 }

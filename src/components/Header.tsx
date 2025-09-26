@@ -1,25 +1,51 @@
 "use client";
-import { Search, UserCircle, Settings as SettingsIcon } from "lucide-react";
+import {
+  Search,
+  UserCircle,
+  Settings as SettingsIcon,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { usePlusStatus } from "@/hooks/usePlusStatus";
 
 export default function Header() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const hasPlus = usePlusStatus(user?.uid); //
 
   return (
     <header className="bg-card text-card-foreground px-6 py-3 border-b border-border transition-colors duration-300">
       <div className="max-w-screen-xl mx-auto flex items-center justify-between">
-        {/* Left: Logo */}
-        <Link
-          href="/"
-          className="font-bold text-lg hover:text-foreground transition-colors"
-        >
-          DEV@Deakin
-        </Link>
+        {/* Left: Logo + Plus */}
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="font-bold text-lg hover:text-foreground transition-colors"
+          >
+            DEV@Deakin
+          </Link>
+
+          {hasPlus ? (
+            <Link
+              href="/plus"
+              className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full hover:opacity-90 transition"
+            >
+              Plus
+            </Link>
+          ) : (
+            <Link
+              href="/plus"
+              className="flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700"
+            >
+              <Star className="w-4 h-4" />
+              Get Plus
+            </Link>
+          )}
+        </div>
 
         {/* Middle: Search bar */}
         <div className="flex items-center flex-1 mx-6 max-w-lg border border-border rounded bg-background px-3 py-1.5 transition-colors">

@@ -1,4 +1,14 @@
-export type Tag = "frontend" | "backend" | "devops" | "uiux" | "other";
+export type Tag =
+  | "frontend"
+  | "backend"
+  | "devops"
+  | "uiux"
+  | "mobile"
+  | "database"
+  | "security"
+  | "testing"
+  | "general"
+  | "other";
 
 export interface Question {
   _id: string;
@@ -6,7 +16,8 @@ export interface Question {
   description: string;
   tags: string[];
   imageUrl?: string | null;
+  code?: string;          
   userId: string;
   createdAt: string;
-  answers?: string[]; // optional for now
+  answers?: string[];     
 }

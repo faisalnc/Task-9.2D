@@ -1,4 +1,3 @@
-//src/components/FindQuestion/QuestionCard.tsx
 "use client";
 
 import { Question } from "@/types/Question";
@@ -6,6 +5,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import { useAuth } from "@/context/AuthContext";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface QuestionCardProps {
   question: Question;
@@ -66,6 +67,15 @@ export default function QuestionCard({
                 Tags: {question.tags?.join(", ") || "—"}
                 <br />
                 Date: {new Date(question.createdAt).toLocaleDateString()}
+                <br />
+                {/*  Show code presence if not expanded */}
+                {!expanded && (
+                  <span className="font-medium text-gray-700">
+                    {question.code && question.code.trim()
+                      ? "Code attached"
+                      : "No code attached"}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -105,7 +115,7 @@ export default function QuestionCard({
           <div
             className={clsx(
               "transition-all duration-300 ease-in-out overflow-hidden",
-              expanded ? "max-h-[1000px] mt-4" : "max-h-0"
+              expanded ? "max-h-[1500px] mt-4" : "max-h-0"
             )}
           >
             {expanded && (
@@ -118,6 +128,26 @@ export default function QuestionCard({
                     height={400}
                     className="mb-4 rounded w-full max-w-xs object-cover"
                   />
+                )}
+
+                {/* Show code only when expanded */}
+                {question.code && question.code.trim() && (
+                  <div className="mb-4">
+                    <strong>Code Snippet:</strong>
+                    <SyntaxHighlighter
+                      language="javascript"
+                      style={oneLight}
+                      showLineNumbers
+                      wrapLines
+                      customStyle={{
+                        fontSize: "0.85rem", // font size
+                        borderRadius: "6px",
+                        padding: "12px",
+                      }}
+                    >
+                      {question.code}
+                    </SyntaxHighlighter>
+                  </div>
                 )}
 
                 {/* Answer List */}

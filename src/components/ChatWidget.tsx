@@ -1,11 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { usePlusStatus } from "@/hooks/usePlusStatus";
+import Link from "next/link";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 export default function ChatWidget() {
-  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const hasPlus = usePlusStatus(user?.uid);
+
+  const [open, setOpen] = useState(false); // controls chat panel
+  const [showLocked, setShowLocked] = useState(false); // controls locked panel
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
@@ -62,6 +69,38 @@ export default function ChatWidget() {
     }
   }
 
+  // 🔑 Show locked panel if not Plus
+  if (!user || !hasPlus) {
+    return (
+      <>
+        {/* Floating toggle button */}
+        <button
+          onClick={() => setShowLocked((v) => !v)}
+          className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg p-4 bg-gray-400 text-white hover:opacity-90 transition"
+          aria-label="Toggle chat (locked)"
+        >
+          💬
+        </button>
+
+        {/* Locked panel */}
+        {showLocked && (
+          <div className="fixed bottom-20 right-6 z-50 w-[300px] rounded-xl shadow-2xl border border-border bg-card text-card-foreground p-4 text-center">
+            <p className="text-sm mb-3">
+              Chat Assistant is a <strong>Plus</strong> feature.
+            </p>
+            <Link
+              href="/plus"
+              className="inline-block bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition"
+            >
+              Upgrade to Plus
+            </Link>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  // 🔑 Plus users get full chat
   return (
     <>
       {/* Floating toggle button */}

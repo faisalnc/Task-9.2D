@@ -28,13 +28,13 @@ export async function POST(req: Request) {
       { upsert: true }
     );
 
-    // --- 📧 Decide recipient based on environment ---
+    // ---  Decide recipient based on environment ---
     const isDev = process.env.NODE_ENV !== "production";
     const recipient = isDev ? "faisal.e924@gmail.com" : email;
 
     // Send via Resend
     const { error } = await resend.emails.send({
-      from: "DEV@Deakin <onboarding@resend.dev>", // ✅ replace once domain verified
+      from: "DEV@Deakin <onboarding@resend.dev>", // can replace once domain verified
       to: recipient,
       subject: "Your DEV@Deakin 2FA Code",
       html: `<h2>${code}</h2><p>This code will expire in 5 minutes.</p>
